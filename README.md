@@ -3,6 +3,8 @@
 
 Consume kafka data and store it in databend.
 ### Config
+make sure you have a `config.properties` file in the resources dir with the following properties:
+
 ```properties
 kafka.bootstrap.servers=localhost:9092
 kafka.consumer.group.id=1
