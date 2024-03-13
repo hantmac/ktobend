@@ -40,7 +40,7 @@ public class KafkaBatchReader {
                 firstMessageOffset = record.offset();
                 batch.add(record.value().replace("\n", ""));
                 lastRecord = record;
-                if (batch.size() > batchSize) {
+                if (batch.size() >= batchSize) {
                     break;
                 }
             } catch (Exception e) {

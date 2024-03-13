@@ -29,7 +29,7 @@ public class ConsumerStageFileWorker {
                 String tableName = tableFileInfo[0];
                 String fileName = tableFileInfo[1];
                 files.add(fileName);
-                if (files.size() > fileSize) {
+                if (files.size() >= fileSize) {
                     this.databendconn.copyInto(tableName, files);
                     break;
                 }
