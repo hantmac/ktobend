@@ -77,8 +77,8 @@ kafka-console-producer --bootstrap-server localhost:9092 --topic test-kafka
 
 8. Write  json record will generate a file and upload to stage
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/cadd555d-a114-4e10-96fa-64b11aa0b5ac/d21137b6-c536-4016-89d4-36a0f9c53fba/Untitled.png)
+![1](https://github.com/hantmac/ktobend/assets/7600925/a110d5d0-18b6-4ab4-957e-1c56ba21a026)
 
 9. The json data will be copied into target table tbcc
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/cadd555d-a114-4e10-96fa-64b11aa0b5ac/83c899b0-05ec-4e66-988c-112a92d78509/Untitled.png)
+![result](https://github.com/hantmac/ktobend/assets/7600925/0fa58c52-fe2f-469a-bd16-226ea6f69baf)
