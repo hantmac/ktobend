@@ -8,7 +8,7 @@ import java.util.Properties;
 public class KafkaJsonConsumer {
     private KafkaConsumer<String, String> consumer;
 
-    public KafkaJsonConsumer() {
+    public KafkaJsonConsumer(String topic) {
         // Kafka consumer configuration
         Properties props = new Properties();
         props.put("bootstrap.servers", "localhost:9092");
@@ -19,7 +19,7 @@ public class KafkaJsonConsumer {
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 
         this.consumer = new KafkaConsumer<>(props);
-        this.consumer.subscribe(Collections.singletonList("json_topic"));
+        this.consumer.subscribe(Collections.singletonList(topic));
     }
 
     public KafkaConsumer<String, String> getConsumer() {

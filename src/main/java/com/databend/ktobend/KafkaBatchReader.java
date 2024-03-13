@@ -36,6 +36,7 @@ public class KafkaBatchReader {
         while (true) {
             try {
                 ConsumerRecord<String,String> record = fetchMessageWithTimeout(maxBatchInterval);
+                System.out.println("Received message: " + record.value() + " from offset: " + record.offset());
                 firstMessageOffset = record.offset();
                 batch.add(record.value().replace("\n", ""));
                 lastRecord = record;
