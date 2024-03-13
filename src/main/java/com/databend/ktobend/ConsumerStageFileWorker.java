@@ -2,7 +2,6 @@ package com.databend.ktobend;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -14,7 +13,7 @@ public class ConsumerStageFileWorker {
     public Integer fileSize;
 
     public ConsumerStageFileWorker() throws SQLException {
-        this.consumer = new KafkaJsonConsumer(Config.getKafkaUrlTopic());
+        this.consumer = new KafkaJsonConsumer(Config.getKafkaFileTopic());
         this.fileSize = Config.getDatabendBatchSize();
         this.databendconn = new Databendconn();
     }

@@ -34,8 +34,8 @@ public class Config {
         return properties.getProperty("kafka.json.topic");
     }
 
-    public static String getKafkaUrlTopic() {
-        return properties.getProperty("kafka.url.topic");
+    public static String getKafkaFileTopic() {
+        return properties.getProperty("kafka.file.topic");
     }
 
     public static String getOutputDirectory() {

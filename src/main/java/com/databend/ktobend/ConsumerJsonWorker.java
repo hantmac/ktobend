@@ -43,7 +43,7 @@ public class ConsumerJsonWorker {
             System.out.println("Uploaded file to stage: " + fileName);
             // kafka record is tableName + fileName, format is: "tableName:fileName"
             String tableFileInfoRecord = Config.getDatabendTable() + ":" + fileName;
-            this.stringProducer.sendStringToKafka(Config.getKafkaUrlTopic(), tableFileInfoRecord);
+            this.stringProducer.sendStringToKafka(Config.getKafkaFileTopic(), tableFileInfoRecord);
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
