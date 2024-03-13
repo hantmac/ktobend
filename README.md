@@ -20,7 +20,7 @@ databend.batch.size=1
 ### Usage
 1. create table in databend
 
-    ```json
+    ```sql
     CREATE TABLE tbcc (
     			i64 Int64,
     			u64 UInt64,
@@ -35,31 +35,31 @@ databend.batch.size=1
 
 2. run zookeeper
 
-```json
+```shell
 zookeeper-server-start /opt/homebrew/etc/kafka/zookeeper.properties
 ```
 
 3. run kafka
 
-```json
+```shell
 kafka-server-start /opt/homebrew/etc/kafka/server.properties
 ```
 
 4. create in json topic
 
-```json
+```shell
 kafka-topics --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic test_kafka
 ```
 
 5. create file info topic
 
-```json
+```shell
 kafka-topics --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic orders
 ```
 
 6. list topics:
 
-```json
+```shell
 kafka-topics --list --bootstrap-server localhost:9092
 ```
 
@@ -67,11 +67,11 @@ kafka-topics --list --bootstrap-server localhost:9092
 
 Json data is:
 
-```json
+```shell
 {"i64": 10,"u64": 30,"f64": 20,"s": "hao","s2": "hello","a16":[1],"a8":[2],"d": "2011-03-06","t": "2016-04-04 11:30:00"}
 ```
 
-```json
+```shell
 kafka-console-producer --bootstrap-server localhost:9092 --topic test-kafka
 ```
 
