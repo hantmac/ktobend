@@ -46,8 +46,8 @@ public class Config {
         return properties.getProperty("databend.dsn");
     }
 
-    public static String getDatabendTable() {
-        return properties.getProperty("databend.table");
+    public static String getDatabendTmpTable() {
+        return properties.getProperty("databend.tmpTable");
     }
 
     public static String getDatabendUser() {
@@ -60,6 +60,16 @@ public class Config {
 
     public static String getDatabendTargetTable() {
         return properties.getProperty("databend.targetTable");
+    }
+
+    public static int getDatabendInterval() {
+        // seconds
+        String intervalStr = properties.getProperty("databend.interval");
+        try {
+            return Integer.parseInt(intervalStr);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid integer value for databend.interval: " + intervalStr);
+        }
     }
 
     public static int getDatabendBatchSize() {

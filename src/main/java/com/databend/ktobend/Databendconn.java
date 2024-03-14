@@ -42,7 +42,7 @@ public class Databendconn {
                 "update * \n" +
                 "when not matched then\n" +
                 "insert *";
-        String sourceTable = Config.getDatabendTable();
+        String sourceTable = Config.getDatabendTmpTable();
         String targetTable = Config.getDatabendTargetTable();
         String mergeIntoSql = String.format(originalMergeSql, targetTable, sourceTable, batches, targetTable, targetTable);
         Connection connection = createConnection();

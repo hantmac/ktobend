@@ -43,7 +43,7 @@ public class ConsumerJsonWorker {
             System.out.println("Uploaded file to stage: " + fileName);
             // kafka record is tableName + fileName, format is: "tableName:fileName:'batch1','batch2',..."
             String batchesStr = "'" + String.join("','", batch.getBatches()) + "'";
-            String tableFileInfoRecord = Config.getDatabendTable() + ":" + fileName + ":" + batchesStr;
+            String tableFileInfoRecord = Config.getDatabendTmpTable() + ":" + fileName + ":" + batchesStr;
             this.stringProducer.sendStringToKafka(Config.getKafkaFileTopic(), tableFileInfoRecord);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -54,7 +54,7 @@ public class ConsumerJsonWorker {
 
     public File generateNDJsonFile(List<String> batchJsonData) throws IOException {
         File tempDir = new File(System.getProperty("java.io.tmpdir"));
-        File tempFile = new File(tempDir, "databend-ingest-" + UUID.randomUUID().toString() + ".json");
+        File tempFile = new File(tempDir, "databend-ingest-" + UUID.randomUUID().toString() + ".ndjson");
 
         int bytesSum = 0;
         try (FileWriter fw = new FileWriter(tempFile)) {

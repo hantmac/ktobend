@@ -5,15 +5,20 @@ import java.util.concurrent.Executors;
 
 public class main {
     public static void main(String[] args) throws Exception {
+        int workerNumber = 2;  // worker number
 
-        ConsumerJsonWorker consumerJsonWorker = new ConsumerJsonWorker();
-        ConsumerStageFileWorker consumerStageFileWorker = new ConsumerStageFileWorker();
+        ExecutorService executorService = Executors.newFixedThreadPool(workerNumber * 2);
 
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
-        executorService.submit(consumerJsonWorker::run);
-        executorService.submit(consumerStageFileWorker::run);
+        for (int i = 0; i < workerNumber; i++) {
+            ConsumerJsonWorker consumerJsonWorker = new ConsumerJsonWorker();
+            executorService.submit(consumerJsonWorker::run);
+        }
+        for (int i = 0; i < workerNumber; i++) {
+            ConsumerStageFileWorker consumerStageFileWorker = new ConsumerStageFileWorker();
+            executorService.submit(consumerStageFileWorker::run);
+        }
 
-        System.out.println("ConsumerJsonWorker, ConsumerStageFileWorker started!");
+        System.out.println(workerNumber + " ConsumerJsonWorker and ConsumerStageFileWorker started!");
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Received shutdown signal, shutting down workers...");
