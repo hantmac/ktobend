@@ -1,6 +1,9 @@
 package com.databend.ktobend;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 public class Config {
@@ -9,12 +12,19 @@ public class Config {
     private static final Properties properties = new Properties();
 
     static {
-        try (InputStream input = Config.class.getClassLoader().getResourceAsStream(CONFIG_FILE)) {
-            if (input == null) {
-                System.err.println("Sorry, unable to find " + CONFIG_FILE);
-                System.exit(1);
+        try {
+            InputStream input;
+            if (Files.exists(Paths.get(CONFIG_FILE))) {
+                // 如果文件系统中存在配置文件，从文件系统中加载
+                input = new FileInputStream(CONFIG_FILE);
+            } else {
+                // 否则，从 JAR 文件中加载
+                input = Config.class.getClassLoader().getResourceAsStream(CONFIG_FILE);
+                if (input == null) {
+                    System.err.println("Sorry, unable to find " + CONFIG_FILE);
+                    System.exit(1);
+                }
             }
-
             properties.load(input);
         } catch (Exception e) {
             e.printStackTrace();
