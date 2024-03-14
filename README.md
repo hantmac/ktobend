@@ -49,8 +49,7 @@ SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further detail
 ### How to test
 1. create two table in databend, tmp table and target table
 > NOTE: make sure `id`, `batch`, `t` fields are present in the table
-
-    ```sql
+```sql
     CREATE TABLE tb_t (
     			id Int64,
                 batch String,
@@ -62,9 +61,9 @@ SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further detail
     			a8  Array(UInt8),
     			d   Date,
     			t   DateTime);
-    ```
+```
 
-    ```sql
+```sql
     CREATE TABLE tbcc (
     			id Int64,
                 batch String,
@@ -76,7 +75,7 @@ SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further detail
     			a8  Array(UInt8),
     			d   Date,
     			t   DateTime);
-    ```
+```
 
 2. run zookeeper
 
