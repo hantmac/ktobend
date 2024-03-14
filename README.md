@@ -1,6 +1,5 @@
 # ktobend
 
-
 Consume kafka data and store it in databend.
 ### Config
 make sure you have a `config.properties` file in the resources dir with the following properties:
@@ -23,7 +22,31 @@ databend.interval=5
 
 ```
 
-### Usage
+## Usage
+
+### How to build
+First you should have maven installed, then you can run the following command to build the project:
+Before you build the project, you should have a databend server running, and write your config in `src/main/resources/config.properties`
+
+```shell
+mvn clean package
+```
+### How to run
+```shell
+java -jar target/ktobend-1.0-SNAPSHOT-jar-with-dependencies.jar
+```
+
+Then you can see:
+
+```shell
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+2 ConsumerJsonWorker and ConsumerStageFileWorker started!
+.......
+```
+
+### How to test
 1. create two table in databend, tmp table and target table
 > NOTE: make sure `id`, `batch`, `t` fields are present in the table
 
