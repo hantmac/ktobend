@@ -25,6 +25,7 @@ databend.interval=5
 ## Usage
 
 ### How to build
+Need Jdk 1.8 or higher version, and maven 3.6.3 or higher version.
 First you should have maven installed, then you can run the following command to build the project:
 Before you build the project, you should have a databend server running, and write your config in `src/main/resources/config.properties`
 
