@@ -15,10 +15,11 @@ output.directory=/tmp
 databend.dsn=jdbc:databend://tn3ftqihs--medium-p8at.gw.aws-us-east-2.default.databend.com:443?ssl=true
 databend.user=cloudapp
 databend.password=databend
-databend.table=tbcc
+databend.tmpTable=tbcc
 databend.batch.size=1
 databend.targetTable=tb_t
 databend.interval=5
+
 
 ```
 
