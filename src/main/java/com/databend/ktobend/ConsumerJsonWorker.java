@@ -41,8 +41,9 @@ public class ConsumerJsonWorker {
             // upload to stage @~
             c.uploadStream(null, "", fis, fileName, jsonFile.length(), false);
             System.out.println("Uploaded file to stage: " + fileName);
-            // kafka record is tableName + fileName, format is: "tableName:fileName"
-            String tableFileInfoRecord = Config.getDatabendTable() + ":" + fileName;
+            // kafka record is tableName + fileName, format is: "tableName:fileName:'batch1','batch2',..."
+            String batchesStr = "'" + String.join("','", batch.getBatches()) + "'";
+            String tableFileInfoRecord = Config.getDatabendTable() + ":" + fileName + ":" + batchesStr;
             this.stringProducer.sendStringToKafka(Config.getKafkaFileTopic(), tableFileInfoRecord);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -58,7 +59,8 @@ public class ConsumerJsonWorker {
         int bytesSum = 0;
         try (FileWriter fw = new FileWriter(tempFile)) {
             for (String data : batchJsonData) {
-                fw.write(data+"\n");
+
+                fw.write(data + "\n");
                 bytesSum += data.getBytes().length;
             }
             fw.flush();

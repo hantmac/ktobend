@@ -36,6 +36,24 @@ public class Databendconn {
             e.printStackTrace();
         }
     }
+
+    public void mergeInto(String batches) throws SQLException {
+        String originalMergeSql = "merge into %s using (select * from %s where batch in (%s)) b on %s.id = b.id  when matched and %s.t < b.t then \n" +
+                "update * \n" +
+                "when not matched then\n" +
+                "insert *";
+        String sourceTable = Config.getDatabendTable();
+        String targetTable = Config.getDatabendTargetTable();
+        String mergeIntoSql = String.format(originalMergeSql, targetTable, sourceTable, batches, targetTable, targetTable);
+        Connection connection = createConnection();
+        try (Statement statement = connection.createStatement()) {
+            statement.execute("set enable_experimental_merge_into = 1");
+            statement.execute(mergeIntoSql);
+            System.out.println("Merged stage into " + targetTable);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
 
 

@@ -1,11 +1,12 @@
 package com.databend.ktobend;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class KafkaBatchReader {
 
@@ -31,16 +32,21 @@ public class KafkaBatchReader {
         ConsumerRecord<String, String> lastRecord;
         long lastMessageOffset;
         long firstMessageOffset;
-        List<String> batch = new ArrayList<>();
+        List<String> batchData = new ArrayList<>();
+        Set<String> batches = new HashSet<>();
 
         while (true) {
             try {
-                ConsumerRecord<String,String> record = fetchMessageWithTimeout(maxBatchInterval);
+                ConsumerRecord<String, String> record = fetchMessageWithTimeout(maxBatchInterval);
                 System.out.println("Received message: " + record.value() + " from offset: " + record.offset());
                 firstMessageOffset = record.offset();
-                batch.add(record.value().replace("\n", ""));
+                String singleMessage = new BatchValue(record.value()).getValueJson();
+                String batchName = new BatchValue(record.value()).getBatch();
+                batchData.add(singleMessage.replace("\n", ""));
+                batches.add(batchName);
+
                 lastRecord = record;
-                if (batch.size() >= batchSize) {
+                if (batchData.size() >= batchSize) {
                     break;
                 }
             } catch (Exception e) {
@@ -48,7 +54,7 @@ public class KafkaBatchReader {
             }
         }
         lastMessageOffset = lastRecord.offset();
-        return new MessagesBatch(batch, firstMessageOffset, lastMessageOffset);
+        return new MessagesBatch(batchData, batches, firstMessageOffset, lastMessageOffset);
     }
 
     public void close() {

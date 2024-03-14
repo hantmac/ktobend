@@ -1,14 +1,17 @@
 package com.databend.ktobend;
 
 import java.util.List;
+import java.util.Set;
 
 public class MessagesBatch {
     private List<String> messages;
+    private Set<String> batches;
     private long firstMessageOffset;
     private long lastMessageOffset;
 
-    public MessagesBatch(List<String> messages, long firstMessageOffset, long lastMessageOffset) {
+    public MessagesBatch(List<String> messages,Set<String> batches, long firstMessageOffset, long lastMessageOffset) {
         this.messages = messages;
+        this.batches = batches;
         this.firstMessageOffset = firstMessageOffset;
         this.lastMessageOffset = lastMessageOffset;
     }
@@ -16,6 +19,10 @@ public class MessagesBatch {
     // getters and setters
     public List<String> getMessages() {
         return messages;
+    }
+
+    public Set<String> getBatches() {
+        return batches;
     }
 
     public Boolean Empty() {

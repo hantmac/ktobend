@@ -28,9 +28,11 @@ public class ConsumerStageFileWorker {
                 String[] tableFileInfo = record.value().split(":");
                 String tableName = tableFileInfo[0];
                 String fileName = tableFileInfo[1];
+                String batchInfo = tableFileInfo[2];
                 files.add(fileName);
                 if (files.size() >= fileSize) {
                     this.databendconn.copyInto(tableName, files);
+                    this.databendconn.mergeInto(batchInfo);
                     break;
                 }
             } catch (Exception e) {

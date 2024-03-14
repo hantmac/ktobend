@@ -58,6 +58,10 @@ public class Config {
         return properties.getProperty("databend.password");
     }
 
+    public static String getDatabendTargetTable() {
+        return properties.getProperty("databend.targetTable");
+    }
+
     public static int getDatabendBatchSize() {
         String batchSizeStr = properties.getProperty("databend.batch.size");
         try {
