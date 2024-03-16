@@ -15,7 +15,7 @@ public class Config {
         try {
             InputStream input;
             if (Files.exists(Paths.get(CONFIG_FILE))) {
-                // 如果文件系统中存在配置文件，从文件系统中加载
+                // if the config file exists in the current directory, load it
                 input = new FileInputStream(CONFIG_FILE);
             } else {
                 // 否则，从 JAR 文件中加载
@@ -48,9 +48,6 @@ public class Config {
         return properties.getProperty("kafka.file.topic");
     }
 
-    public static String getOutputDirectory() {
-        return properties.getProperty("output.directory");
-    }
 
     public static String getDatabendDsn() {
         return properties.getProperty("databend.dsn");
