@@ -49,7 +49,7 @@ public class Databendconn {
         try (Statement statement = connection.createStatement()) {
             statement.execute("set enable_experimental_merge_into = 1");
             statement.execute(mergeIntoSql);
-            System.out.println("Merged stage into " + targetTable);
+            System.out.println("Merged stage into: " + mergeIntoSql);
         } catch (SQLException e) {
             e.printStackTrace();
         }finally {

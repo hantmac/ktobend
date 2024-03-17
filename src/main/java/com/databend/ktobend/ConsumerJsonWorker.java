@@ -20,7 +20,7 @@ public class ConsumerJsonWorker {
     public ConsumerJsonWorker() throws SQLException {
         KafkaJsonConsumer consumer = new KafkaJsonConsumer(Config.getKafkaJsonTopic(), Config.getKafkaConsumerGroupIdJson());
         int batchSize = Config.getDatabendBatchSize();
-        this.batchReader = new KafkaBatchReader(consumer, batchSize, java.time.Duration.ofSeconds(100));
+        this.batchReader = new KafkaBatchReader(consumer, batchSize, java.time.Duration.ofSeconds(5));
         this.stringProducer = new KafkaStringProducer();
         this.databendConnection = (DatabendConnection) Databendconn.createConnection();
     }
@@ -31,8 +31,8 @@ public class ConsumerJsonWorker {
     }
 
     public void handleBatch(int i) throws IOException, SQLException {
-        MessagesBatch batch = this.batchReader.readBatch();
         System.out.println(i);
+        MessagesBatch batch = this.batchReader.readBatch();
         if (batch.Empty()) {
             System.out.println("batch is empty");
             return;

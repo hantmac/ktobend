@@ -4,6 +4,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -24,7 +25,6 @@ public class KafkaBatchReader {
     public ConsumerRecords<String, String> fetchMessageWithTimeout(Duration timeOut) {
         ConsumerRecords<String, String> records = consumer.getConsumer().poll(timeOut);
         if (records.isEmpty()) {
-            System.out.println("record is empty");
             return null;
         } else {
             return records;
@@ -32,53 +32,55 @@ public class KafkaBatchReader {
     }
 
     public MessagesBatch readBatch() {
+        Instant start = Instant.now();
         ConsumerRecord<String, String> lastRecord = null;
         long lastMessageOffset;
         long firstMessageOffset = 0;
         List<String> batchData = new ArrayList<>();
         Set<String> batches = new HashSet<>();
+        int internalSize = 0;
 
-//        while (true) {
-        try {
-            ConsumerRecords<String, String> records = fetchMessageWithTimeout(maxBatchInterval);
-//                if (records == null) {
-//                    System.out.println("data record is null");
-//                    break;
-//                }
-            System.out.println("Received data count: " + records.count());
-            for (ConsumerRecord<String, String> record : records) {
-                System.out.println("Received data info: " + " from offset: " + record.offset());
-                firstMessageOffset = record.offset();
-                String batchName = new BatchValue(record.value()).getBatch();
-                Boolean isValueArray = new BatchValue(record.value()).isValueArray();
-                if (isValueArray) {
-//                    batchData = new BatchValue(record.value()).getValueList();
-                    batchData.addAll(new BatchValue(record.value()).getValueList());
-                } else {
-                    String singleMessage = new BatchValue(record.value()).getValueJson();
-                    batchData.add(singleMessage.replace("\n", ""));
+
+        while (internalSize <= batchSize) {
+            try {
+                ConsumerRecords<String, String> records = fetchMessageWithTimeout(maxBatchInterval);
+                if (records == null) {
+                    System.out.println("record is null");
+                    break;
                 }
-                batches.add(batchName);
-                lastRecord = record;
-                this.consumer.commitSync();
-            }
-            if ((batchData.size() >= batchSize)) {
-                if (lastRecord == null) {
-                    return new MessagesBatch(batchData, batches, firstMessageOffset, 0);
+                for (ConsumerRecord<String, String> record : records) {
+                    System.out.println("internalsize" + internalSize + " Received data info: " + " from offset: " + record.offset());
+                    internalSize++;
+                    firstMessageOffset = record.offset();
+                    String batchName = new BatchValue(record.value()).getBatch();
+                    Boolean isValueArray = new BatchValue(record.value()).isValueArray();
+                    if (isValueArray) {
+                        batchData.addAll(new BatchValue(record.value()).getValueList());
+                    } else {
+                        String singleMessage = new BatchValue(record.value()).getValueJson();
+                        batchData.add(singleMessage.replace("\n", ""));
+                    }
+                    batches.add(batchName);
+                    lastRecord = record;
+                    this.consumer.commitSync();
                 }
-                lastMessageOffset = lastRecord.offset();
-                return new MessagesBatch(batchData, batches, firstMessageOffset, lastMessageOffset);
+                Instant end = Instant.now();
+                long timeElapsed = Duration.between(start, end).getSeconds();
+                if (timeElapsed >= 10) {
+                    System.out.println("read batch time elapsed");
+                    break;
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-//        }
-//        if (lastRecord == null) {
-//            return new MessagesBatch(batchData, batches, firstMessageOffset, 0);
-//        }
-//        lastMessageOffset = lastRecord.offset();
-//        return new MessagesBatch(batchData, batches, firstMessageOffset, lastMessageOffset);
-        return new MessagesBatch(new ArrayList<>(), batches, firstMessageOffset, 0);
+        System.out.println("batchData size " + batchData.size());
+        if (lastRecord == null) {
+            return new MessagesBatch(batchData, batches, firstMessageOffset, 0);
+        }
+        lastMessageOffset = lastRecord.offset();
+        return new MessagesBatch(batchData, batches, firstMessageOffset, lastMessageOffset);
     }
 
     public void close() {
