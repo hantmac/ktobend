@@ -52,6 +52,8 @@ public class Databendconn {
             System.out.println("Merged stage into " + targetTable);
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+           connection.close();
         }
     }
 }

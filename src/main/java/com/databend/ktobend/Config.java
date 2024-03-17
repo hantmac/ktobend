@@ -36,8 +36,12 @@ public class Config {
         return properties.getProperty("kafka.bootstrap.servers");
     }
 
-    public static String getKafkaConsumerGroupId() {
-        return properties.getProperty("kafka.consumer.group.id");
+    public static String getKafkaConsumerGroupIdJson() {
+        return properties.getProperty("kafka.consumer.group.id.json");
+    }
+
+    public static String getKafkaConsumerGroupIdFile() {
+        return properties.getProperty("kafka.consumer.group.id.file");
     }
 
     public static String getKafkaJsonTopic() {

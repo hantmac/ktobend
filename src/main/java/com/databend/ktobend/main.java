@@ -5,7 +5,7 @@ import java.util.concurrent.Executors;
 
 public class main {
     public static void main(String[] args) throws Exception {
-        int workerNumber = 2;  // worker number
+        int workerNumber = 1;  // worker number
 
         ExecutorService executorService = Executors.newFixedThreadPool(workerNumber * 2);
 
