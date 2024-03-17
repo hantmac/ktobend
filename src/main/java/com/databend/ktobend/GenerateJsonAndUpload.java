@@ -112,9 +112,9 @@ public class GenerateJsonAndUpload {
 
 
     public void run() {
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             String batch = "2024-03-17-" + i;
-            List<Map<String, Object>> batchData = genBatch(batch, 100);
+            List<Map<String, Object>> batchData = genBatch(batch, 20);
             try {
                 System.out.println("handle batch: " + batch);
                 handleBatch(batchData, batch);

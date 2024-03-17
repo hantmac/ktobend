@@ -16,7 +16,7 @@ public class ConsumerStageFileWorker {
 
     public ConsumerStageFileWorker() throws SQLException {
         this.consumer = new KafkaJsonConsumer(Config.getKafkaFileTopic(), Config.getKafkaConsumerGroupIdFile());
-        this.fileSize = 3;
+        this.fileSize = 10;
         this.databendconn = new Databendconn();
     }
 
@@ -28,7 +28,7 @@ public class ConsumerStageFileWorker {
         List<String> batches = new ArrayList<>();
         while (files.size() <= fileSize) {
             try {
-                ConsumerRecords<String, String> records = fetchMessageWithTimeout(java.time.Duration.ofSeconds(5));
+                ConsumerRecords<String, String> records = fetchMessageWithTimeout(java.time.Duration.ofSeconds(10));
                 if (records == null) {
                     System.out.println("file records is null");
                     break;
@@ -47,17 +47,26 @@ public class ConsumerStageFileWorker {
                 Instant end = Instant.now();
                 long timeElapsed = Duration.between(start, end).getSeconds();
                 if (timeElapsed >= Config.getDatabendInterval()) {
+                    System.out.println("Time elapsed: " + timeElapsed + " seconds");
                     break;
                 }
             } catch (Exception e) {
-                throw new Exception(e);
+                System.err.println("An error occurred while consuming messages: " + e.getMessage());
+                e.printStackTrace();
             }
         }
         if (tableName == null || files.isEmpty()) {
             return;
         }
-        this.databendconn.copyInto(tableName, files);
-        this.databendconn.mergeInto(batchInfo);
+        try {
+            this.databendconn.copyInto(tableName, files);
+            this.databendconn.mergeInto(batchInfo);
+        } catch (Exception e) {
+            System.err.println("An error occurred while copying data into the table: " + e.getMessage());
+            e.printStackTrace();
+            // Decide what to do when an exception occurs. For example, you can stop the execution:
+            // throw new RuntimeException("An error occurred while copying data into the table", e);
+        }
     }
 
     public ConsumerRecords<String, String> fetchMessageWithTimeout(Duration timeOut) {
