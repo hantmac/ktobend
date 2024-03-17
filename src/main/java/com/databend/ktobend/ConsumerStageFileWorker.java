@@ -56,6 +56,7 @@ public class ConsumerStageFileWorker {
             }
         }
         if (tableName == null || files.isEmpty()) {
+            System.out.println("No file to consume");
             return;
         }
         try {

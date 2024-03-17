@@ -30,7 +30,7 @@ public class GenerateJsonAndUpload {
         List<Map<String, Object>> data = new ArrayList<>();
         for (int i = 0; i < n; i++) {
             Map<String, Object> d = new HashMap<>();
-            d.put("id", mockNeat.ints().range(1000000, 2000000000).get());
+            d.put("id", mockNeat.ints().range(1000, 2000000000).get());
             d.put("batch", batch);
             d.put("name", mockNeat.names().full().get());
             d.put("birthday", LocalDateTime.now().toLocalDate().toString());
@@ -114,7 +114,7 @@ public class GenerateJsonAndUpload {
     public void run() {
         for (int i = 0; i < 100; i++) {
             String batch = "2024-03-17-" + i;
-            List<Map<String, Object>> batchData = genBatch(batch, 20);
+            List<Map<String, Object>> batchData = genBatch(batch, 500);
             try {
                 System.out.println("handle batch: " + batch);
                 handleBatch(batchData, batch);

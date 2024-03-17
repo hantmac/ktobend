@@ -31,7 +31,7 @@ public class Databendconn {
         Connection connection = createConnection();
         try (Statement statement = connection.createStatement()) {
             statement.execute(copyIntoSql);
-            System.out.println("Copied files into " + tableName);
+            System.out.println("Copied files into: " + files.size());
         } catch (SQLException e) {
             e.printStackTrace();
         }
