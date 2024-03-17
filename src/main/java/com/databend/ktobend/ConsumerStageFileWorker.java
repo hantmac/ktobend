@@ -16,7 +16,7 @@ public class ConsumerStageFileWorker {
 
     public ConsumerStageFileWorker() throws SQLException {
         this.consumer = new KafkaJsonConsumer(Config.getKafkaFileTopic(), Config.getKafkaConsumerGroupIdFile());
-        this.fileSize = 1;
+        this.fileSize = 3;
         this.databendconn = new Databendconn();
     }
 
@@ -25,28 +25,39 @@ public class ConsumerStageFileWorker {
         Instant start = Instant.now();
         String tableName = null;
         String batchInfo = null;
-        try {
-            ConsumerRecords<String, String> records = fetchMessageWithTimeout(java.time.Duration.ofSeconds(100));
-            for (ConsumerRecord<String, String> record : records) {
-                System.out.println("Received file info: " + record.value() + " from offset: " + record.offset());
-                // split the record into tableName and fileName
-                String[] tableFileInfo = record.value().split(":");
-                tableName = tableFileInfo[0];
-                String fileName = tableFileInfo[1];
-                batchInfo = tableFileInfo[2];
-                files.add(fileName);
+        List<String> batches = new ArrayList<>();
+        while (files.size() <= fileSize) {
+            try {
+                ConsumerRecords<String, String> records = fetchMessageWithTimeout(java.time.Duration.ofSeconds(5));
+                if (records == null) {
+                    System.out.println("file records is null");
+                    break;
+                }
+                for (ConsumerRecord<String, String> record : records) {
+                    System.out.println("Received file info: " + record.value() + " from offset: " + record.offset());
+                    // split the record into tableName and fileName
+                    String[] tableFileInfo = record.value().split(":");
+                    tableName = tableFileInfo[0];
+                    String fileName = tableFileInfo[1];
+                    batches.add(tableFileInfo[2]);
+                    files.add(fileName);
+                }
+                batchInfo = "'" + String.join("','", batches) + "'";
+                this.consumer.commitSync();
+                Instant end = Instant.now();
+                long timeElapsed = Duration.between(start, end).getSeconds();
+                if (timeElapsed >= Config.getDatabendInterval()) {
+                    break;
+                }
+            } catch (Exception e) {
+                throw new Exception(e);
             }
-            this.consumer.commitSync();
-            Instant end = Instant.now();
-            long timeElapsed = Duration.between(start, end).getSeconds();
-            // 时间维度和 filesize 两个条件，满足一个就执行 copy and merge into
-            if ((files.size() >= fileSize || timeElapsed >= Config.getDatabendInterval()) && (tableName != null && batchInfo != null)) {
-                this.databendconn.copyInto(tableName, files);
-                this.databendconn.mergeInto(batchInfo);
-            }
-        } catch (Exception e) {
-            throw new Exception(e);
         }
+        if (tableName == null || files.isEmpty()) {
+            return;
+        }
+        this.databendconn.copyInto(tableName, files);
+        this.databendconn.mergeInto(batchInfo);
     }
 
     public ConsumerRecords<String, String> fetchMessageWithTimeout(Duration timeOut) {

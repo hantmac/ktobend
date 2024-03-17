@@ -74,6 +74,12 @@
               <version>RELEASE</version>
               <scope>test</scope>
             </dependency>
+      <!-- https://mvnrepository.com/artifact/com.github.javafaker/javafaker -->
+      <dependency>
+        <groupId>net.andreinc</groupId>
+        <artifactId>mockneat</artifactId>
+        <version>0.4.6</version>
+      </dependency>
     </dependencies>
 
 </project>

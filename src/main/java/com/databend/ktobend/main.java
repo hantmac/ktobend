@@ -9,9 +9,13 @@ public class main {
 
         ExecutorService executorService = Executors.newFixedThreadPool(workerNumber * 2);
 
+//        for (int i = 0; i < workerNumber; i++) {
+//            ConsumerJsonWorker consumerJsonWorker = new ConsumerJsonWorker();
+//            executorService.submit(consumerJsonWorker::run);
+//        }
         for (int i = 0; i < workerNumber; i++) {
-            ConsumerJsonWorker consumerJsonWorker = new ConsumerJsonWorker();
-            executorService.submit(consumerJsonWorker::run);
+            GenerateJsonAndUpload generateJsonAndUpload = new GenerateJsonAndUpload();
+            executorService.submit(generateJsonAndUpload::run);
         }
         for (int i = 0; i < workerNumber; i++) {
             ConsumerStageFileWorker consumerStageFileWorker = new ConsumerStageFileWorker();
