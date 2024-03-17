@@ -45,7 +45,7 @@ public class KafkaBatchReader {
             try {
                 ConsumerRecords<String, String> records = fetchMessageWithTimeout(maxBatchInterval);
                 if (records == null) {
-                    System.out.println("record is null");
+                    System.out.println("data records is null");
                     break;
                 }
                 for (ConsumerRecord<String, String> record : records) {
