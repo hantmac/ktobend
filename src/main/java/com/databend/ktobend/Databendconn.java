@@ -33,15 +33,20 @@ public class Databendconn {
         try (Statement statement = connection.createStatement()) {
             Instant copyIntoStart = Instant.now();
             statement.execute(copyIntoSql);
+            ResultSet r = statement.getResultSet();
+            while (r.next()) {
+            }
             Instant copyIntoEnd = Instant.now();
             System.out.println("Copied files into: " + files.size() + " , time elapsed: " + (copyIntoEnd.toEpochMilli() - copyIntoStart.toEpochMilli()) + "ms");
         } catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            connection.close();
         }
     }
 
     public void mergeInto(String batches) throws Exception {
-        String originalMergeSql = "merge into %s using (select * from %s where batch in (%s)) b on %s.id = b.id  when matched and %s.t < b.t then \n" +
+        String originalMergeSql = "merge into %s using (select * exclude rn from (select *, row_number() over(partition by id order by t desc ) as rn  from %s where batch in (%s)) a where rn=1 ) b on %s.id = b.id  when matched and %s.t < b.t then \n" +
                 "update * \n" +
                 "when not matched then\n" +
                 "insert *";
@@ -53,10 +58,14 @@ public class Databendconn {
             statement.execute("set enable_experimental_merge_into = 1");
             Instant mergeIntoStart = Instant.now();
             statement.execute(mergeIntoSql);
+            ResultSet r = statement.getResultSet();
+            while (r.next()){}
             Instant mergeIntoEnd = Instant.now();
             System.out.println("Merged stage into: " + mergeIntoSql + " , time elapsed: " + (mergeIntoEnd.toEpochMilli() - mergeIntoStart.toEpochMilli()) + "ms");
         } catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            connection.close();
         }
     }
 }
