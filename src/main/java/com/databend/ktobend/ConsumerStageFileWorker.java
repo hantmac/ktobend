@@ -59,14 +59,35 @@ public class ConsumerStageFileWorker {
             System.out.println("No file to consume");
             return;
         }
-        try {
-            this.databendconn.copyInto(tableName, files);
-            this.databendconn.mergeInto(batchInfo);
-        } catch (Exception e) {
-            System.err.println("An error occurred while copying data into the table: " + e.getMessage());
-            e.printStackTrace();
-            // Decide what to do when an exception occurs. For example, you can stop the execution:
-            // throw new RuntimeException("An error occurred while copying data into the table", e);
+
+        int maxRetries = 3; // Set the maximum number of retries
+        for (int attempt = 0; attempt < maxRetries; attempt++) {
+            try {
+                this.databendconn.copyInto(tableName, files);
+                break; // If successful, break out of the loop
+            } catch (Exception e) {
+                System.err.println("An error occurred: " + e.getMessage());
+                if (attempt == maxRetries - 1) { // If this was the last attempt
+                    System.err.println("Failed to execute after " + maxRetries + " attempts.");
+                    e.printStackTrace();
+                } else {
+                    System.err.println("Retrying (" + (attempt + 2) + "/" + maxRetries + ")...");
+                }
+            }
+        }
+        for (int attempt = 0; attempt < maxRetries; attempt++) {
+            try {
+                this.databendconn.mergeInto(batchInfo);
+                break; // If successful, break out of the loop
+            } catch (Exception e) {
+                System.err.println("An error occurred: " + e.getMessage());
+                if (attempt == maxRetries - 1) { // If this was the last attempt
+                    System.err.println("Failed to execute after " + maxRetries + " attempts.");
+                    e.printStackTrace();
+                } else {
+                    System.err.println("Retrying (" + (attempt + 2) + "/" + maxRetries + ")...");
+                }
+            }
         }
     }
 

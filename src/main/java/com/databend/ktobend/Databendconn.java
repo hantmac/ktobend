@@ -37,8 +37,6 @@ public class Databendconn {
             System.out.println("Copied files into: " + files.size() + " , time elapsed: " + (copyIntoEnd.toEpochMilli() - copyIntoStart.toEpochMilli()) + "ms");
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connection.close();
         }
     }
 
@@ -59,8 +57,6 @@ public class Databendconn {
             System.out.println("Merged stage into: " + mergeIntoSql + " , time elapsed: " + (mergeIntoEnd.toEpochMilli() - mergeIntoStart.toEpochMilli()) + "ms");
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            connection.close();
         }
     }
 }
