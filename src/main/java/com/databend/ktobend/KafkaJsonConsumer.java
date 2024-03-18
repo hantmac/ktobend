@@ -15,7 +15,8 @@ public class KafkaJsonConsumer {
         props.put("group.id", groupId);
         props.put("enable.auto.commit", "false");
         props.put("auto.commit.interval.ms", "60000");
-        props.put("max.poll.interval.ms", "60000");
+//        props.put("max.poll.interval.ms", "60000");
+        props.put("max.poll.records",Config.getKafkaMaxPollRecords());
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 

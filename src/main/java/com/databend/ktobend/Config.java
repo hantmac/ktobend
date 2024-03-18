@@ -122,6 +122,10 @@ public class Config {
     public static String getDatabendBatchName() {
         return properties.getProperty("databend.batch.name");
     }
+
+    public static String getKafkaMaxPollRecords() {
+        return properties.getProperty("kafka.max.poll.records");
+    }
 }
 
 

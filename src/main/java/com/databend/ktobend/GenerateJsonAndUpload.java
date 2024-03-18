@@ -21,8 +21,6 @@ public class GenerateJsonAndUpload {
     DatabendConnection databendConnection;
 
     public GenerateJsonAndUpload() throws SQLException {
-        KafkaJsonConsumer consumer = new KafkaJsonConsumer(Config.getKafkaJsonTopic(), Config.getKafkaConsumerGroupIdJson());
-        int batchSize = Config.getDatabendBatchSize();
         this.stringProducer = new KafkaStringProducer();
         this.databendConnection = (DatabendConnection) Databendconn.createConnection();
     }
