@@ -91,5 +91,37 @@ public class Config {
             throw new IllegalArgumentException("Invalid integer value for databend.batch.size: " + batchSizeStr);
         }
     }
+
+    public static int getDatabendFileBatchSize() {
+        String batchSizeStr = properties.getProperty("databend.file.batch.size");
+        try {
+            return Integer.parseInt(batchSizeStr);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid integer value for databend.file.batch.size: " + batchSizeStr);
+        }
+    }
+
+    public static int getDatabendTestBatchSize() {
+        String batchSizeStr = properties.getProperty("databend.test.batch");
+        try {
+            return Integer.parseInt(batchSizeStr);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid integer value for databend.test.batch.size: " + batchSizeStr);
+        }
+    }
+
+    public static int getDatabendTestFileBatchSize() {
+        String batchSizeStr = properties.getProperty("databend.test.file.batch");
+        try {
+            return Integer.parseInt(batchSizeStr);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid integer value for databend.test.file.batch.size: " + batchSizeStr);
+        }
+    }
+
+    public static String getDatabendBatchName() {
+        return properties.getProperty("databend.batch.name");
+    }
 }
+
 

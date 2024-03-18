@@ -16,7 +16,7 @@ public class ConsumerStageFileWorker {
 
     public ConsumerStageFileWorker() throws SQLException {
         this.consumer = new KafkaJsonConsumer(Config.getKafkaFileTopic(), Config.getKafkaConsumerGroupIdFile());
-        this.fileSize = 10;
+        this.fileSize = Config.getDatabendFileBatchSize();
         this.databendconn = new Databendconn();
     }
 
@@ -34,7 +34,7 @@ public class ConsumerStageFileWorker {
                     break;
                 }
                 for (ConsumerRecord<String, String> record : records) {
-                    System.out.println("Received file info: " + record.value() + " from offset: " + record.offset());
+                    System.out.println(Instant.now() + ": Received file info: " + record.value() + " from offset: " + record.offset());
                     // split the record into tableName and fileName
                     String[] tableFileInfo = record.value().split(":");
                     tableName = tableFileInfo[0];

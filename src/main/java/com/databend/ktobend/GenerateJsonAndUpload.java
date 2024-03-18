@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -30,7 +31,7 @@ public class GenerateJsonAndUpload {
         List<Map<String, Object>> data = new ArrayList<>();
         for (int i = 0; i < n; i++) {
             Map<String, Object> d = new HashMap<>();
-            d.put("id", mockNeat.ints().range(1000, 2000000000).get());
+            d.put("id", mockNeat.ints().range(10000000, 2000000000).get());
             d.put("batch", batch);
             d.put("name", mockNeat.names().full().get());
             d.put("birthday", LocalDateTime.now().toLocalDate().toString());
@@ -78,13 +79,17 @@ public class GenerateJsonAndUpload {
         int attempt = 0;
         while (attempt < maxRetries) {
             try (InputStream is = new ByteArrayInputStream(jsonData)) {
-                String fileName = "databend-ingest-" + UUID.randomUUID().toString() + ".ndjson";
+                Instant currentTime = Instant.now();
+                String fileName = "databend-ingest-" + currentTime.toString() + ".ndjson";
+                fileName = fileName.replace(":", "-");
                 // upload to stage @~
+                Instant uploadStart = Instant.now();
                 this.databendConnection.uploadStream(null, "", is, fileName, jsonData.length, false);
-                System.out.println("Uploaded file to stage: " + fileName);
+                Instant uploadEnd = Instant.now();
+                System.out.println("Uploaded file to stage: " + fileName + " in " + uploadEnd.minusMillis(uploadStart.toEpochMilli()).toEpochMilli() + "ms");
                 // kafka record is tableName + fileName, format is: "tableName:fileName:'batch1','batch2',..."
 //                String batchesStr = "'" + String.join("','", batchNames) + "'";
-                String batchesStr = batchName ;
+                String batchesStr = batchName;
                 String tableFileInfoRecord = Config.getDatabendTmpTable() + ":" + fileName + ":" + batchesStr;
                 this.stringProducer.sendStringToKafka(Config.getKafkaFileTopic(), tableFileInfoRecord);
                 System.out.println("sended file info to kafka: " + tableFileInfoRecord);
@@ -112,9 +117,9 @@ public class GenerateJsonAndUpload {
 
 
     public void run() {
-        for (int i = 0; i < 100; i++) {
-            String batch = "2024-03-17-" + i;
-            List<Map<String, Object>> batchData = genBatch(batch, 500);
+        for (int i = 0; i < Config.getDatabendTestBatchSize(); i++) {
+            String batch = Config.getDatabendBatchName() + i;
+            List<Map<String, Object>> batchData = genBatch(batch, Config.getDatabendTestFileBatchSize());
             try {
                 System.out.println("handle batch: " + batch);
                 handleBatch(batchData, batch);

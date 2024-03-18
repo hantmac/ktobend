@@ -1,6 +1,7 @@
 package com.databend.ktobend;
 
 import java.sql.*;
+import java.time.Instant;
 import java.util.List;
 
 public class Databendconn {
@@ -25,19 +26,23 @@ public class Databendconn {
         return resultSet.getString(1);
     }
 
-    public void copyInto(String tableName, List<String> files) throws SQLException {
+    public void copyInto(String tableName, List<String> files) throws Exception {
         String filesStr = "'" + String.join("','", files) + "'";
         String copyIntoSql = String.format("copy into %s from @~ files=(%s) file_format=(type=NDJSON) purge=true;", tableName, filesStr);
         Connection connection = createConnection();
         try (Statement statement = connection.createStatement()) {
+            Instant copyIntoStart = Instant.now();
             statement.execute(copyIntoSql);
-            System.out.println("Copied files into: " + files.size());
-        } catch (SQLException e) {
+            Instant copyIntoEnd = Instant.now();
+            System.out.println("Copied files into: " + files.size() + " , time elapsed: " + (copyIntoEnd.toEpochMilli() - copyIntoStart.toEpochMilli()) + "ms");
+        } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            connection.close();
         }
     }
 
-    public void mergeInto(String batches) throws SQLException {
+    public void mergeInto(String batches) throws Exception {
         String originalMergeSql = "merge into %s using (select * from %s where batch in (%s)) b on %s.id = b.id  when matched and %s.t < b.t then \n" +
                 "update * \n" +
                 "when not matched then\n" +
@@ -48,12 +53,14 @@ public class Databendconn {
         Connection connection = createConnection();
         try (Statement statement = connection.createStatement()) {
             statement.execute("set enable_experimental_merge_into = 1");
+            Instant mergeIntoStart = Instant.now();
             statement.execute(mergeIntoSql);
-            System.out.println("Merged stage into: " + mergeIntoSql);
-        } catch (SQLException e) {
+            Instant mergeIntoEnd = Instant.now();
+            System.out.println("Merged stage into: " + mergeIntoSql + " , time elapsed: " + (mergeIntoEnd.toEpochMilli() - mergeIntoStart.toEpochMilli()) + "ms");
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
-           connection.close();
+        } finally {
+            connection.close();
         }
     }
 }
