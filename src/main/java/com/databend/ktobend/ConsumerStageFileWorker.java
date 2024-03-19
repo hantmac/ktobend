@@ -77,7 +77,9 @@ public class ConsumerStageFileWorker {
         }
         for (int attempt = 0; attempt < maxRetries; attempt++) {
             try {
-                this.databendconn.mergeInto(batchInfo);
+                MergeIntoEffectRows mergeIntoEffectRows = this.databendconn.mergeInto(batchInfo);
+                System.out.println("merge into the number of insert rows: " + mergeIntoEffectRows.getInsertRows());
+                System.out.println("merge into the number of update rows: " + mergeIntoEffectRows.getUpdateRows());
                 break; // If successful, break out of the loop
             } catch (Exception e) {
                 System.err.println("An error occurred: " + e.getMessage());

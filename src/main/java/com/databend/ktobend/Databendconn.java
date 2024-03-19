@@ -40,12 +40,12 @@ public class Databendconn {
             System.out.println("Copied files into: " + files.size() + " , time elapsed: " + (copyIntoEnd.toEpochMilli() - copyIntoStart.toEpochMilli()) + "ms");
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             connection.close();
         }
     }
 
-    public void mergeInto(String batches) throws Exception {
+    public MergeIntoEffectRows mergeInto(String batches) throws Exception {
         String originalMergeSql = "merge into %s using (select * exclude rn from (select *, row_number() over(partition by id order by t desc ) as rn  from %s where batch in (%s)) a where rn=1 ) b on %s.id = b.id  when matched and %s.t < b.t then \n" +
                 "update * \n" +
                 "when not matched then\n" +
@@ -54,20 +54,27 @@ public class Databendconn {
         String targetTable = Config.getDatabendTargetTable();
         String mergeIntoSql = String.format(originalMergeSql, targetTable, sourceTable, batches, targetTable, targetTable);
         Connection connection = createConnection();
+        Integer insertRows = 0;
+        Integer updateRows = 0;
         try (Statement statement = connection.createStatement()) {
             statement.execute("set enable_experimental_merge_into = 1");
             Instant mergeIntoStart = Instant.now();
             statement.execute(mergeIntoSql);
             ResultSet r = statement.getResultSet();
-            while (r.next()){}
+            while (r.next()) {
+                insertRows = r.getInt("number of rows inserted");
+                updateRows = r.getInt("number of rows updated");
+            }
             Instant mergeIntoEnd = Instant.now();
             System.out.println("Merged stage into: " + mergeIntoSql + " , time elapsed: " + (mergeIntoEnd.toEpochMilli() - mergeIntoStart.toEpochMilli()) + "ms");
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             connection.close();
         }
+        return new MergeIntoEffectRows(insertRows, updateRows);
     }
+
 }
 
 
